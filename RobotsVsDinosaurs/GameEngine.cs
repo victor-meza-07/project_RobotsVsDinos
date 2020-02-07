@@ -5,6 +5,14 @@ using System.Text;
 namespace RobotsVsDinosaurs
 {
 
+    /// <summary> 
+    /// TODO: 
+    ///  
+    /// ASSIGN ROBOT IDS PROGRAMATICALLY MAYBE SOME ADVATAGES WILL COME FROM THIS
+    /// ASSIGING OF WEAPONS IS NOT HAPPENING ACORDING TO THE ROBO WIELDING IT, WEAPON EFFICACY VALUES ARE SET ACCRODING TO THE LAST ROBOT TO BE SCANNED FOR
+    /// FIX THAT
+    /// </summary>
+
     //WE WANT THE "FLEET" OF ROBOTS THAT THE USER SELECTED TO BE SAVED IN FLEET
     class GameEngine
     {
@@ -60,7 +68,7 @@ namespace RobotsVsDinosaurs
         //** PROMPT USER INPUT **//
         //** PICK A ROBOT AND HIS WEAPON**//
 
-        //pick a robot
+        //pick a robot //pick a weapon
         public void pickARobotNweaponize()
         {
             Console.Clear();
@@ -92,6 +100,7 @@ namespace RobotsVsDinosaurs
 
 
                 //TODO : SEND TO A METHOD THAT CALCULATES EFFICACY DEPENDING ON WHO IS HOLDING X WEAPON.
+                weapongPickeD.strikeefficacy = weapongPickeD.getWeaponEfficacy(robotPickeD,weapongPickeD);
                 
 
                 //Adding them to the fleetList with finished attributes
@@ -101,7 +110,7 @@ namespace RobotsVsDinosaurs
 
         }
 
-        //pick a weapon
+        
         
 
 
@@ -146,7 +155,7 @@ namespace RobotsVsDinosaurs
             foreach (Robot robot in fleet.fleetOfRobots) 
             {
                 //"Robot Name", "Health", "Energy", "AttackPower", "Weapon", "Efficacy"
-                Console.WriteLine(string.Format("{0,-10} | {1,-10} | {2,-10} | {3,-10} | {4,-10} | {5,-10} |", robot.name, robot.health, robot.energy, robot.attackPower, robot.Weapontype.weaponType, "This Requires a Method"));
+                Console.WriteLine(string.Format("{0,-10} | {1,-10} | {2,-10} | {3,-10} | {4,-10} | {5,-10} |", robot.name, robot.health, robot.energy, robot.attackPower, robot.Weapontype.weaponType, robot.Weapontype.strikeefficacy.ToString()));
             }
         }
         private void displayAllDinos() 
@@ -189,9 +198,10 @@ namespace RobotsVsDinosaurs
         //add robots
         public void addRobots() 
         {
-            robotList.Add(new Robot { name = "FINN", attackPower = 1.5, energy = .5, health = 100, robotId = 0 });
-            robotList.Add(new Robot { name = "PATRICIA", attackPower = 1.5, energy = .5, health = 100, robotId = 1 });
-            robotList.Add(new Robot { name = "Mr Jenkins", attackPower = 1.5, energy = .5, health = 100, robotId = 2});
+            robotList.Add(new Robot { name = "FINN", attackPower = 1.5, energy = .5, health = 100, robotId = 0 }); //BASED ON MICRO PROCESSOR 
+            robotList.Add(new Robot { name = "PATRICIA", attackPower = 1.5, energy = .5, health = 100, robotId = 1 }); //BASED UNIVERSITY OF MANCHISTER ATLAS 
+            robotList.Add(new Robot { name = "Mr Jenkins", attackPower = 1.5, energy = .5, health = 100, robotId = 2}); // BASED ON THE ARCHITECTURE FOR MANCHESTER BABY
+            robotList.Add(new Robot { name = "HALLEY", attackPower = 1.5, energy = .5, health = 100, robotId = 3 }); //BASED ON QUANTUM COMPUTERS
         }
 
 
