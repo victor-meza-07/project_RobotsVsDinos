@@ -85,11 +85,13 @@ namespace RobotsVsDinosaurs
 
 
         //setting weapon efficacy
-        public double getWeaponEfficacy(Robot robot, WeaponType weapon) 
+        public WeaponType getWeaponEfficacy(Robot robot, WeaponType weapon) 
         {
+            WeaponType newWeappon = new WeaponType();
             double efficacy = 0;
             efficacy = checkForWeapon(weapon, robot);
-            return efficacy;
+            newWeappon.strikeefficacy = efficacy;
+            return newWeappon;
         }
        
     }

@@ -75,36 +75,38 @@ namespace RobotsVsDinosaurs
             Console.WriteLine("Pick a robot from the list");
             displayAllRobots();
             string robotpicked = Console.ReadLine(); // Expecting it as the ID
-            
 
 
-            string name = findRobotPicked(robotpicked);
-            Console.WriteLine($"Pick a weapon for {name}");
-            displayAllWeapons(name);
+
+            robot = findRobotPickedObject(robotpicked); // getting the robot object corresponding to that ID
+            Console.WriteLine($"Pick a weapon for {robot.name}");
+            displayAllWeapons(robot.name);
             string weaponPicked = Console.ReadLine();
             
 
 
             //Check if the robot has access to wheelchair;
-            if ((name != "Mr Jenkins") && (weaponPicked == "7"))
+            if ((robot.name != "Mr Jenkins") && (weaponPicked == "7"))
             {
                 Console.WriteLine("Your Character doesn't have access to that weapon!");
             }
             //This is where we assign a weapon to our robot. 
             else 
             {
-                WeaponType weapongPickeD = new WeaponType();
-                weapongPickeD = findWeaponPicked(weaponPicked);
-                Robot robotPickeD = findRobotPickedObject(name);
+                
+
+                this.WeaponType = findWeaponPicked(weaponPicked); // we are getting the weapon object here.
+                
 
 
 
                 //TODO : SEND TO A METHOD THAT CALCULATES EFFICACY DEPENDING ON WHO IS HOLDING X WEAPON.
-                weapongPickeD.strikeefficacy = weapongPickeD.getWeaponEfficacy(robotPickeD,weapongPickeD);
+                
+                this.WeaponType = this.WeaponType.getWeaponEfficacy(robot,this.WeaponType);
                 
 
                 //Adding them to the fleetList with finished attributes
-                fleet.addToFleetList(robotPickeD,weapongPickeD);
+                fleet.addToFleetList(robot,this.WeaponType);
             }
 
 
@@ -230,23 +232,25 @@ namespace RobotsVsDinosaurs
             {
                 if (weaponID == weapon.weaponId.ToString()) 
                 {
+                    
                     weaponPicked = weapon;
+                    weaponPicked.weaponType = weapon.weaponType;
                 }
             }
 
             return weaponPicked;
         }
-        public Robot findRobotPickedObject(string robotName) 
+        public Robot findRobotPickedObject(string robotID) 
         {
-            Robot theRobot = new Robot();
+            Robot pickedRobot = new Robot();
             foreach (Robot robot in robotList) 
             {
-                if (robotName == robot.name) 
+                if (robotID == robot.robotId.ToString()) 
                 {
-                    theRobot = robot;
+                    pickedRobot = robot;
                 }
             }
-            return theRobot;
+            return pickedRobot;
         }
 
 
