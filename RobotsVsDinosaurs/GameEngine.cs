@@ -24,6 +24,7 @@ namespace RobotsVsDinosaurs
         List<Robot> robotList;
         public bool runGame;
         Fleet fleet;
+        int counter; 
 
 
         //Constructor
@@ -36,6 +37,8 @@ namespace RobotsVsDinosaurs
             robotList = new List<Robot>();
             runGame = true;
             fleet = new Fleet();
+            counter = 0;
+            
 
         }
 
@@ -43,6 +46,7 @@ namespace RobotsVsDinosaurs
         //Methods
         public void Start()
         {
+            counter = 0;
             Console.WriteLine("Adding Robots");
             addRobots();
             Console.WriteLine("Adding WeaponTypes");
@@ -50,8 +54,19 @@ namespace RobotsVsDinosaurs
             Console.WriteLine("Adding Dinos");
             addDinos();
 
+
+            //I want them to pick, 3 robots
+            //counter = 0, everytime we get a valid pick counter++, inside a while counter < 3 execute The Following: 
+                //I want to check if the pick was valid
+                    // does that robot have access to that weapon?
+                        //if not --> do not add counter --> Let Them Know that robot does not have access to that weapon
+                        //else it must mean that the robot does have access
+                            // add to the fleet list
+                            // counter ++
+           
+
             //Pick a robot and weaponize it.
-            for (int i = 0; i < 3; i++) 
+            while (counter < 3) 
             {
                 pickARobotNweaponize();
             }
@@ -67,6 +82,7 @@ namespace RobotsVsDinosaurs
 
         //** PROMPT USER INPUT **//
         //** PICK A ROBOT AND HIS WEAPON**//
+        // THERE IS A BUG INSIDE THIS METHOD RELATED TO EFFICACY VALUE ASSIGNMENT
 
         //pick a robot //pick a weapon
         public void pickARobotNweaponize()
@@ -77,36 +93,38 @@ namespace RobotsVsDinosaurs
             string robotpicked = Console.ReadLine(); // Expecting it as the ID
 
 
-
-            robot = findRobotPickedObject(robotpicked); // getting the robot object corresponding to that ID
-            Console.WriteLine($"Pick a weapon for {robot.name}");
-            displayAllWeapons(robot.name);
+            Robot robotAsObj = new Robot();
+            robotAsObj = findRobotPickedObject(robotpicked); // getting the robot object corresponding to that ID
+            Console.WriteLine($"Pick a weapon for {robotAsObj.name}");
+            displayAllWeapons(robotAsObj.name);
             string weaponPicked = Console.ReadLine();
             
 
 
             //Check if the robot has access to wheelchair;
-            if ((robot.name != "Mr Jenkins") && (weaponPicked == "7"))
+            if ((robotAsObj.name != "Mr Jenkins") && (weaponPicked == "7"))
             {
-                Console.WriteLine("Your Character doesn't have access to that weapon!");
+                WeaponType weaponAsObject = new WeaponType();
+                weaponAsObject = findWeaponPicked(weaponPicked);
+                Console.WriteLine($"{robotAsObj.name} does not have access to {weaponAsObject.weaponType}");
+                Console.WriteLine("Please choose a different weapon");
+
+                //this is where we would invalidate the pick by not adding to the counter. 
             }
             //This is where we assign a weapon to our robot. 
             else 
             {
+                WeaponType weaponObject = new WeaponType();
+                weaponObject = findWeaponPicked(weaponPicked); // we are getting the weapon object here.
+
+                //SEND TO A METHOD THAT CALCULATES EFFICACY DEPENDING ON WHO IS HOLDING X WEAPON.
+                weaponObject = this.WeaponType.getWeaponEfficacy(robotAsObj, weaponObject);
                 
-
-                this.WeaponType = findWeaponPicked(weaponPicked); // we are getting the weapon object here.
-                
-
-
-
-                //TODO : SEND TO A METHOD THAT CALCULATES EFFICACY DEPENDING ON WHO IS HOLDING X WEAPON.
-                
-                this.WeaponType = this.WeaponType.getWeaponEfficacy(robot,this.WeaponType);
-                
-
                 //Adding them to the fleetList with finished attributes
-                fleet.addToFleetList(robot,this.WeaponType);
+                fleet.addToFleetList(robotAsObj,weaponObject);
+
+                //adding to the counter to finally validate the pick
+                counter++;
             }
 
 
@@ -232,9 +250,8 @@ namespace RobotsVsDinosaurs
             {
                 if (weaponID == weapon.weaponId.ToString()) 
                 {
-                    
                     weaponPicked = weapon;
-                    weaponPicked.weaponType = weapon.weaponType;
+                    break;   
                 }
             }
 
