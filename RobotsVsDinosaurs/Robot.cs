@@ -15,13 +15,12 @@ namespace RobotsVsDinosaurs
         public double energy;
         public double attackPower; // This will be a multiplyer of the weapons attack strength.
         public bool amIalive;
+        public string wasKilledBy;
         
 
         //Constructor
         public Robot()
         {
-
-
             Weapontype = new WeaponType();
             name = null;
             health = 100;
@@ -29,7 +28,7 @@ namespace RobotsVsDinosaurs
             attackPower = 0;
             robotId = 0;
             amIalive = true;
-            
+            wasKilledBy = null;            
         }
 
         //Methods

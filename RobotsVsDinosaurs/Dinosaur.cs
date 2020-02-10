@@ -15,6 +15,7 @@ namespace RobotsVsDinosaurs
         public double dinoAttackEfficacy; // Will BE SET BY DINO LOGIC DEPENDING ON RECEIVING PARTY // will be a multiplyer
         public int dinoID;
         public bool amIalive;
+        public string wasKilledBy;
 
         public Dinosaur()
         {
@@ -26,6 +27,7 @@ namespace RobotsVsDinosaurs
             dinoAttackEfficacy = 0;
             dinoID = 0;
             amIalive = true;
+            wasKilledBy = null;
         }
 
         //Methods

@@ -104,12 +104,10 @@ namespace RobotsVsDinosaurs
             Console.Clear();
 
             Console.WriteLine($"BATTLE IN: {getPickedEnvironment()}");
-            displayAllFleet();
-            Console.WriteLine("vs");
-            displayAllHerd();
-            Console.WriteLine("Assigning Buffers");
+            
             startABattle();
-            displayAllHerd();
+            
+            
             Console.ReadLine();
         }
 
@@ -344,23 +342,23 @@ namespace RobotsVsDinosaurs
         //add dinosaurs
         public void addDinos()
         {
-            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 0 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 2 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 3 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 4 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 5 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 6 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 7 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 8 });
+            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 10, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 0 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 1 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 2, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 2 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 3 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 4 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 5 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 4, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 6 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 7 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 8 });
         }
         //add robots
         public void addRobots() 
         {
-            robotList.Add(new Robot { name = "FINN", attackPower = 1.5, energy = .5, health = 100, robotId = 0 }); //BASED ON MICRO PROCESSOR 
-            robotList.Add(new Robot { name = "PATRICIA", attackPower = 1.5, energy = .5, health = 100, robotId = 1 }); //BASED UNIVERSITY OF MANCHISTER ATLAS 
-            robotList.Add(new Robot { name = "Mr Jenkins", attackPower = 1.5, energy = .5, health = 100, robotId = 2}); // BASED ON THE ARCHITECTURE FOR MANCHESTER BABY
-            robotList.Add(new Robot { name = "HALLEY", attackPower = 1.5, energy = .5, health = 100, robotId = 3 }); //BASED ON QUANTUM COMPUTERS
+            robotList.Add(new Robot { name = "FINN", attackPower = 1.5, energy = 100, health = 100, robotId = 0 }); //BASED ON MICRO PROCESSOR 
+            robotList.Add(new Robot { name = "PATRICIA", attackPower = 1.5, energy = 100, health = 100, robotId = 1 }); //BASED UNIVERSITY OF MANCHISTER ATLAS 
+            robotList.Add(new Robot { name = "Mr Jenkins", attackPower = 1.5, energy = 100, health = 100, robotId = 2}); // BASED ON THE ARCHITECTURE FOR MANCHESTER BABY
+            robotList.Add(new Robot { name = "HALLEY", attackPower = 1.5, energy = 100, health = 100, robotId = 3 }); //BASED ON QUANTUM COMPUTERS
         }
         //add Enviroments or "BattleFields" that will be chosen from at random when starting a battle, these will give advantages to the dinosaurs
         public void addEnviroments() 
@@ -461,7 +459,11 @@ namespace RobotsVsDinosaurs
         //we need to pass the FLEET LIST & HERD LIST
         public void startABattle() 
         {
-            battlefieldClass.startABattle(difficulty, fleet.fleetOfRobots, herdClass.herdOFDinos, battlefieldEnvironmentPicked);
+            while (runGame == true) 
+            {
+                battlefieldClass.startABattle(difficulty, fleet.fleetOfRobots, herdClass.herdOFDinos, battlefieldEnvironmentPicked, gamemode);
+            }
+           
         }
 
         public void flushValues() 

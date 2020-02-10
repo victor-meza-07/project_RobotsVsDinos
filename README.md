@@ -5,9 +5,8 @@
 
 
 
-----------------------------------------------------------------
+MVP - "original" option, this is the submission, while I develop the other gamemodes
 
-IF YOU'VE SCROLLED THIS FAR: HERES A NICE IMAGE
 
 
 
