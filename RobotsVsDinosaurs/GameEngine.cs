@@ -22,9 +22,15 @@ namespace RobotsVsDinosaurs
         List<WeaponType> weaponTypeS;
         List<Dinosaur> dinoList;
         List<Robot> robotList;
+        List<BattleEnviroment> listofEnviroments;
         public bool runGame;
         Fleet fleet;
-        int counter; 
+        int counter;
+        int difficulty;
+        int gamemode;
+        Herd herdClass;
+        Battlefield battlefieldClass;
+
 
 
         //Constructor
@@ -38,14 +44,30 @@ namespace RobotsVsDinosaurs
             runGame = true;
             fleet = new Fleet();
             counter = 0;
-            
-
+            difficulty = 0; // this will be set by the player before anything else, this is how we will determine how many dinos or robots they fight against. 
+            herdClass = new Herd();
+            battlefieldClass = new Battlefield();
+            listofEnviroments = new List<BattleEnviroment>();
+            gamemode = 0;
         }
 
 
         //Methods
         public void Start()
         {
+            //FLUSH THE LISTS
+            weaponTypeS.Clear();
+            robotList.Clear();
+            listofEnviroments.Clear();
+            dinoList.Clear();
+            herdClass.herdOFDinos.Clear();
+            fleet.fleetOfRobots.Clear();
+
+            //flushing the variables
+            gamemode = 0;
+            difficulty = 0;
+
+
             counter = 0;
             Console.WriteLine("Adding Robots");
             addRobots();
@@ -53,36 +75,45 @@ namespace RobotsVsDinosaurs
             addWeaponType();
             Console.WriteLine("Adding Dinos");
             addDinos();
+            Console.WriteLine("Adding Enviroments");
+            addEnviroments();
 
 
             //I want them to pick, 3 robots
             //counter = 0, everytime we get a valid pick counter++, inside a while counter < 3 execute The Following: 
-                //I want to check if the pick was valid
-                    // does that robot have access to that weapon?
-                        //if not --> do not add counter --> Let Them Know that robot does not have access to that weapon
-                        //else it must mean that the robot does have access
-                            // add to the fleet list
-                            // counter ++
-           
+            //I want to check if the pick was valid
+            // does that robot have access to that weapon?
+            //if not --> do not add counter --> Let Them Know that robot does not have access to that weapon
+            //else it must mean that the robot does have access
+            // add to the fleet list
+            // counter ++
 
-            //Pick a robot and weaponize it.
-            while (counter < 3) 
-            {
-                pickARobotNweaponize();
-            }
+            //Picking a gamemode
+            gamemode = Convert.ToInt32(gameModePrompt());
 
+            //picking a difficulty
+            difficulty = Convert.ToInt32(difficultyPrompt());
+
+
+            gamemodeSetter(); // Will kick things off in the propper gamemode & DIFFICULTY
+
+
+
+
+
+
+
+
+            Console.Clear();
             displayAllFleet();
-            displayAllDinos();
-            
-
-
-
+            Console.WriteLine("vs");
+            displayAllHerd();
+            Console.ReadLine();
         }
 
 
         //** PROMPT USER INPUT **//
         //** PICK A ROBOT AND HIS WEAPON**//
-        // THERE IS A BUG INSIDE THIS METHOD RELATED TO EFFICACY VALUE ASSIGNMENT
 
         //pick a robot //pick a weapon
         public void pickARobotNweaponize()
@@ -128,6 +159,53 @@ namespace RobotsVsDinosaurs
             }
 
 
+        }
+        public void makeAherd() 
+        {
+            herdClass.addHerdofDinos(difficulty ,dinoList);  
+        }
+        public void autoPickRobotNWeaponize() 
+        {
+            int counter = 0;
+            while (counter < 3) 
+            {
+                int roboID = 0;
+                int weaponID = 0;
+                Robot newRobot = new Robot();
+                WeaponType newWepon = new WeaponType();
+
+                roboID = herdClass.rng.Next(0, (robotList.Count));
+                weaponID = herdClass.rng.Next(0, (weaponTypeS.Count));
+
+                foreach (Robot robot in robotList) 
+                {
+                    if (roboID == robot.robotId) 
+                    {
+                        newRobot = robot;
+                        break;
+                    }
+                }
+                foreach (WeaponType weapon in weaponTypeS) 
+                {
+                    if (weaponID == weapon.weaponId) 
+                    {
+                        newWepon = weapon;
+                        break;
+                    }
+                }
+
+                if ((newRobot.robotId != 2) && (newWepon.weaponId == 7)) // MAKES SURE NO AUTO PICKED ROBOT HAS WHEEL CHAIR
+                {
+                    // DO NOT ADD TO COUNTER
+                    continue;
+                }
+                else 
+                {
+                    newWepon = this.WeaponType.getWeaponEfficacy(newRobot, newWepon);
+                    fleet.addToFleetList(newRobot, newWepon);
+                    counter++;
+                }
+            }
         }
 
         
@@ -185,6 +263,40 @@ namespace RobotsVsDinosaurs
                 Console.WriteLine(dino.dinosaurName);
             }
         }
+        private void displayAllHerd() 
+        {
+            Console.WriteLine("DINO HERD");
+            foreach (Dinosaur dino in herdClass.herdOFDinos) 
+            {  
+                Console.WriteLine(dino.dinosaurName);
+            }
+        }
+
+        //display all gamemodes
+        private string gameModePrompt() 
+        {
+            string userchoice = "";
+            Console.WriteLine("Please Select A Game Mode");
+            Console.WriteLine("1. Original - We Have you Pick An Environment, Three Robots and 3 Dinos Spawn you see the battle happen"); // MVP
+            Console.WriteLine("2. Involved - We Have you Pick Three Robots and up to 12 Dinos Spawn depending on difficulty chosen, you control the robot attacks");
+            Console.WriteLine("3. Multiplayer - Each Player Picks 3, One player controls Robot Fleet, Second Player Controls Dino Herd YOU DUKE IT OUT ON A CHESSBOARD, Players vote on Environment if a tie occurs one is chosen at random from the 2"); // THIS WILL PLOT THEM ON A CHESSBOARD AND SHOULD DISPLAY POSITIONS ON CONSOLE
+            userchoice = Console.ReadLine();
+
+            return userchoice;
+        }
+        //display all difficulties
+        private string difficultyPrompt() 
+        {
+            string userchoice = "";
+            Console.WriteLine("What Difficulty would you like to set?");
+            Console.WriteLine("0. BABY");
+            Console.WriteLine("1. EASY");
+            Console.WriteLine("2. MEDIUM");
+            Console.WriteLine("3. HARD");
+            Console.WriteLine("4. IMPOSSIBLE");
+            userchoice = Console.ReadLine();
+            return userchoice;
+        }
 
 
 
@@ -205,15 +317,15 @@ namespace RobotsVsDinosaurs
         //add dinosaurs
         public void addDinos()
         {
-            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1});
-            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1 });
+            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 0 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 1 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 2 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 3 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 4 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 5 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 6 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 7 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 1, dinoEnergy = 1, dinoShieldPower = 1, dinoHealth = 1, dinoID = 8 });
         }
         //add robots
         public void addRobots() 
@@ -222,6 +334,14 @@ namespace RobotsVsDinosaurs
             robotList.Add(new Robot { name = "PATRICIA", attackPower = 1.5, energy = .5, health = 100, robotId = 1 }); //BASED UNIVERSITY OF MANCHISTER ATLAS 
             robotList.Add(new Robot { name = "Mr Jenkins", attackPower = 1.5, energy = .5, health = 100, robotId = 2}); // BASED ON THE ARCHITECTURE FOR MANCHESTER BABY
             robotList.Add(new Robot { name = "HALLEY", attackPower = 1.5, energy = .5, health = 100, robotId = 3 }); //BASED ON QUANTUM COMPUTERS
+        }
+        //add Enviroments or "BattleFields" that will be chosen from at random when starting a battle, these will give advantages to the dinosaurs
+        public void addEnviroments() 
+        {
+            listofEnviroments.Add(new BattleEnviroment {enviromentType = "Plain", enviromentID = 0 });
+            listofEnviroments.Add(new BattleEnviroment { enviromentType = "Mountain", enviromentID = 1 });
+            listofEnviroments.Add(new BattleEnviroment { enviromentType = "Jungle", enviromentID = 2 });
+            listofEnviroments.Add(new BattleEnviroment { enviromentType = "Beach", enviromentID = 3 });
         }
 
 
@@ -273,6 +393,35 @@ namespace RobotsVsDinosaurs
 
 
         //** GAME MODES **//
+      
+        public void gamemodeSetter() 
+        {
+            if (gamemode == 1) 
+            {
+                autoPickRobotNWeaponize();
+                makeAherd();
+            }//MVP
+            else if (gamemode == 2) 
+            {
+                int counter = 0;
+                while (counter < 3) // Lets you pick 3 robots and weaponize them // SHOULD USE DIFFICULTY LEVEL IN FUTURE
+                {
+                    pickARobotNweaponize();
+                    counter++;
+                }
+                makeAherd(); // MAKES A HEARD, IN FUTURE SHOULD USE DIFFICULTY LEVEL
+            } // USER SELECTION SINGLE PLAYER
+            else if (gamemode == 3) { } // MULTIPLAYER
+        }
 
+
+        
+
+        //START A BATTLE
+        //we need to pass the FLEET LIST & HERD LIST
+        public void startABattle() 
+        {
+            
+        }
     }
 }

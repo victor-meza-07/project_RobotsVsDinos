@@ -7,7 +7,11 @@ namespace RobotsVsDinosaurs
         static void Main(string[] args)
         {
             GameEngine gameEngine = new GameEngine();
-            gameEngine.Start();
+            while (true) 
+            {
+                gameEngine.Start();
+            }
+            
         }
     }
 }

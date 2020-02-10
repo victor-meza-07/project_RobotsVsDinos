@@ -34,6 +34,34 @@ namespace RobotsVsDinosaurs
             {
                 efficacy = wAxeLoogicstrikeEfficacy(robot);
             }//AXE
+            if (weapon.weaponId == 1) 
+            {
+                efficacy = wShovelLoogicstrikeEfficacy(robot);
+            }//SHOVEL
+            if (weapon.weaponId == 2) 
+            {
+                efficacy = wSwordLoogicstrikeEfficacy(robot);
+            }//SWORD
+            if (weapon.weaponId == 3) 
+            {
+                efficacy = wGunLoogicstrikeEfficacy(robot);
+            }//GUN
+            if (weapon.weaponId == 4) 
+            {
+                efficacy = wFryingPanLoogicstrikeEfficacy(robot);
+            }//FRYING PAN
+            if (weapon.weaponId == 5) 
+            {
+                efficacy = wRubberDLoogicstrikeEfficacy(robot);
+            }//RUBBER DUCKY
+            if (weapon.weaponId == 6) 
+            {
+                efficacy = wBucketBLoogicstrikeEfficacy(robot);
+            }//BUCKET OF BOLTS
+            if (weapon.weaponId == 7) 
+            {
+                efficacy = wWheelChairLoogicstrikeEfficacy(robot);
+            }//WHEEL CHAIR
 
             return efficacy;
         }
