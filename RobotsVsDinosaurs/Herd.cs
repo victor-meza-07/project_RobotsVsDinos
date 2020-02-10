@@ -25,7 +25,7 @@ namespace RobotsVsDinosaurs
             //randomly generate a dino id from dinolist, then check it agains "dino" object below.
             Dinosaur dinoToBeAdded = new Dinosaur();
             int dinoId = 0;
-            dinoId = rng.Next(0, (totalDinos.Count + 1));
+            dinoId = rng.Next(0, (totalDinos.Count));
 
             foreach (Dinosaur dino in totalDinos) 
             {

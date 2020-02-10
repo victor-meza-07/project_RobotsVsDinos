@@ -8,9 +8,17 @@ namespace RobotsVsDinosaurs
     /// <summary> 
     /// TODO: 
     ///  
-    /// ASSIGN ROBOT IDS PROGRAMATICALLY MAYBE SOME ADVATAGES WILL COME FROM THIS
-    /// ASSIGING OF WEAPONS IS NOT HAPPENING ACORDING TO THE ROBO WIELDING IT, WEAPON EFFICACY VALUES ARE SET ACCRODING TO THE LAST ROBOT TO BE SCANNED FOR
-    /// FIX THAT
+    /// START A BATTLE IN THE BATTLEFIELD CLASS WHERE:
+    /// DIFFICULTY, HERD LIST, FLEET LIST, AND ENVIRONMENT are passed through
+    ///     we need to scan our herd list once we know the environment we are in for ID's that match criteria depending on environemnt.
+    ///     for example send to a method that checks what dinos are in our herd, compares their ids to see if they are getting bennefits from the environment we are playing in
+    ///     we need to make a library of dino ids that get a buffer in a certain environment, preferably in the dino class, where if in this 
+    ///     type of environment attack efficacy goes up or down
+    ///     
+    ///     add game logic where:  attack damage = (attack power * attack efficacy * weapon Strike Power)
+    ///     
+    ///****************BUGS****************
+    /// ALL PLAY A ROLL IN GAMEPLAY
     /// </summary>
 
     //WE WANT THE "FLEET" OF ROBOTS THAT THE USER SELECTED TO BE SAVED IN FLEET
@@ -30,6 +38,7 @@ namespace RobotsVsDinosaurs
         int gamemode;
         Herd herdClass;
         Battlefield battlefieldClass;
+        int battlefieldEnvironmentPicked; 
 
 
 
@@ -49,23 +58,15 @@ namespace RobotsVsDinosaurs
             battlefieldClass = new Battlefield();
             listofEnviroments = new List<BattleEnviroment>();
             gamemode = 0;
+            battlefieldEnvironmentPicked = 0;
         }
 
 
         //Methods
         public void Start()
         {
-            //FLUSH THE LISTS
-            weaponTypeS.Clear();
-            robotList.Clear();
-            listofEnviroments.Clear();
-            dinoList.Clear();
-            herdClass.herdOFDinos.Clear();
-            fleet.fleetOfRobots.Clear();
-
-            //flushing the variables
-            gamemode = 0;
-            difficulty = 0;
+            //ALWAYS FLUSH THE VALUES!!!
+            flushValues();
 
 
             counter = 0;
@@ -79,17 +80,13 @@ namespace RobotsVsDinosaurs
             addEnviroments();
 
 
-            //I want them to pick, 3 robots
-            //counter = 0, everytime we get a valid pick counter++, inside a while counter < 3 execute The Following: 
-            //I want to check if the pick was valid
-            // does that robot have access to that weapon?
-            //if not --> do not add counter --> Let Them Know that robot does not have access to that weapon
-            //else it must mean that the robot does have access
-            // add to the fleet list
-            // counter ++
+           
 
             //Picking a gamemode
             gamemode = Convert.ToInt32(gameModePrompt());
+
+            //Picking an Environmen
+            battlefieldEnvironmentPicked = Convert.ToInt32(environmentPrompt());
 
             //picking a difficulty
             difficulty = Convert.ToInt32(difficultyPrompt());
@@ -105,8 +102,13 @@ namespace RobotsVsDinosaurs
 
 
             Console.Clear();
+
+            Console.WriteLine($"BATTLE IN: {getPickedEnvironment()}");
             displayAllFleet();
             Console.WriteLine("vs");
+            displayAllHerd();
+            Console.WriteLine("Assigning Buffers");
+            startABattle();
             displayAllHerd();
             Console.ReadLine();
         }
@@ -118,38 +120,39 @@ namespace RobotsVsDinosaurs
         //pick a robot //pick a weapon
         public void pickARobotNweaponize()
         {
-            Console.Clear();
-            Console.WriteLine("Pick a robot from the list");
-            displayAllRobots();
-            string robotpicked = Console.ReadLine(); // Expecting it as the ID
-
-
+            string robotpicked = "";
+            string weaponPicked = "";
             Robot robotAsObj = new Robot();
-            robotAsObj = findRobotPickedObject(robotpicked); // getting the robot object corresponding to that ID
-            Console.WriteLine($"Pick a weapon for {robotAsObj.name}");
-            displayAllWeapons(robotAsObj.name);
-            string weaponPicked = Console.ReadLine();
+            WeaponType weaponAsObject = new WeaponType();
+
+            Console.Clear();
+
+            robotpicked = getRobotIDFromUser(); // Expecting it as the ID
             
+            robotAsObj = findRobotPickedObject(robotpicked); // getting the robot object corresponding to that ID
+
+            weaponPicked = getWeaponIDfromUser(robotAsObj); // Expecting it as the ID
+
+            weaponAsObject = findWeaponPicked(weaponPicked);
+            //CONSIDER ADDING A METHOD THAT CHECKS FOR ACCESS TO THAT WEAPON THAT WAY WE COULD CUSTOMIZE THE WEAPONS!!!
 
 
             //Check if the robot has access to wheelchair;
-            if ((robotAsObj.name != "Mr Jenkins") && (weaponPicked == "7"))
+            if ((robotAsObj.name != "Mr Jenkins") && (weaponPicked == "7")) // could be the ID, but chose this for readability
             {
-                WeaponType weaponAsObject = new WeaponType();
-                weaponAsObject = findWeaponPicked(weaponPicked);
                 Console.WriteLine($"{robotAsObj.name} does not have access to {weaponAsObject.weaponType}");
                 Console.WriteLine("Please choose a different weapon");
-
+                Console.Read();
                 //this is where we would invalidate the pick by not adding to the counter. 
             }
             //This is where we assign a weapon to our robot. 
             else 
             {
-                WeaponType weaponObject = new WeaponType();
-                weaponObject = findWeaponPicked(weaponPicked); // we are getting the weapon object here.
+                WeaponType weaponObject = new WeaponType(); //clearing any possible values so that we may assign the ones we will fetch;
+               
 
                 //SEND TO A METHOD THAT CALCULATES EFFICACY DEPENDING ON WHO IS HOLDING X WEAPON.
-                weaponObject = this.WeaponType.getWeaponEfficacy(robotAsObj, weaponObject);
+                weaponObject = this.WeaponType.getWeaponEfficacy(robotAsObj, weaponAsObject);
                 
                 //Adding them to the fleetList with finished attributes
                 fleet.addToFleetList(robotAsObj,weaponObject);
@@ -266,10 +269,23 @@ namespace RobotsVsDinosaurs
         private void displayAllHerd() 
         {
             Console.WriteLine("DINO HERD");
+            Console.WriteLine(String.Format("{0,-10} | {1,-10} | {2,-10}", "Dino Name", "Strike Power", "Attack Efficacy"));
             foreach (Dinosaur dino in herdClass.herdOFDinos) 
-            {  
-                Console.WriteLine(dino.dinosaurName);
+            {
+                Console.WriteLine(String.Format("{0,-10} | {1,-10} | {2,-10}", dino.dinosaurName, dino.dinoAttackPower.ToString(), dino.dinoAttackEfficacy.ToString()));
             }
+        }
+        private string getPickedEnvironment() 
+        {
+            string env = "";
+            foreach (BattleEnviroment enviroment in listofEnviroments)
+            {
+                if (enviroment.enviromentID == battlefieldEnvironmentPicked) 
+                {
+                    env = enviroment.enviromentType;
+                }
+            }
+            return env;
         }
 
         //display all gamemodes
@@ -294,6 +310,17 @@ namespace RobotsVsDinosaurs
             Console.WriteLine("2. MEDIUM");
             Console.WriteLine("3. HARD");
             Console.WriteLine("4. IMPOSSIBLE");
+            userchoice = Console.ReadLine();
+            return userchoice;
+        }
+        private string environmentPrompt() 
+        {
+            string userchoice = "";
+            Console.WriteLine("Please Select an Environment");
+            foreach (BattleEnviroment enviroment in listofEnviroments) 
+            {
+                Console.WriteLine($"{enviroment.enviromentID}.{enviroment.enviromentType}");
+            }
             userchoice = Console.ReadLine();
             return userchoice;
         }
@@ -389,7 +416,21 @@ namespace RobotsVsDinosaurs
             }
             return pickedRobot;
         }
-
+        public string getRobotIDFromUser() 
+        {
+            string userchoice = "";
+            Console.WriteLine("Pick a robot from the list!");
+            displayAllRobots();
+            userchoice = Console.ReadLine();
+            return userchoice;
+        }
+        public string getWeaponIDfromUser(Robot robotasOBJ) 
+        {
+            string userchoice = "";
+            Console.WriteLine($"Pick a weapon for {robotasOBJ.name}");
+            displayAllWeapons(robotasOBJ.name);
+            return userchoice;
+        }
 
 
         //** GAME MODES **//
@@ -403,11 +444,10 @@ namespace RobotsVsDinosaurs
             }//MVP
             else if (gamemode == 2) 
             {
-                int counter = 0;
+                counter = 0;
                 while (counter < 3) // Lets you pick 3 robots and weaponize them // SHOULD USE DIFFICULTY LEVEL IN FUTURE
                 {
                     pickARobotNweaponize();
-                    counter++;
                 }
                 makeAherd(); // MAKES A HEARD, IN FUTURE SHOULD USE DIFFICULTY LEVEL
             } // USER SELECTION SINGLE PLAYER
@@ -421,7 +461,23 @@ namespace RobotsVsDinosaurs
         //we need to pass the FLEET LIST & HERD LIST
         public void startABattle() 
         {
-            
+            battlefieldClass.startABattle(difficulty, fleet.fleetOfRobots, herdClass.herdOFDinos, battlefieldEnvironmentPicked);
+        }
+
+        public void flushValues() 
+        {
+            //FLUSH THE LISTS
+            weaponTypeS.Clear();
+            robotList.Clear();
+            listofEnviroments.Clear();
+            dinoList.Clear();
+            herdClass.herdOFDinos.Clear();
+            fleet.fleetOfRobots.Clear();
+
+            //flushing the variables
+            gamemode = 0;
+            difficulty = 0;
+            battlefieldEnvironmentPicked = 0;
         }
     }
 }

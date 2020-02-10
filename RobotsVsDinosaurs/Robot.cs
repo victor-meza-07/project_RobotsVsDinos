@@ -14,6 +14,7 @@ namespace RobotsVsDinosaurs
         public double health;
         public double energy;
         public double attackPower; // This will be a multiplyer of the weapons attack strength.
+        public bool amIalive;
         
 
         //Constructor
@@ -27,6 +28,8 @@ namespace RobotsVsDinosaurs
             energy = 100;
             attackPower = 0;
             robotId = 0;
+            amIalive = true;
+            
         }
 
         //Methods
