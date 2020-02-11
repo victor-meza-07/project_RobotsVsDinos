@@ -339,15 +339,15 @@ namespace RobotsVsDinosaurs
         //add dinosaurs
         public void addDinos()
         {
-            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 10, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 0 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 1 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 2, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 2 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 3 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 4 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 5 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 4, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 6 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 7 });
-            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 100, dinoID = 8 });
+            dinoList.Add(new Dinosaur { dinosaurName = "T Rex", dinoAttackPower = 10, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 0 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Iguanadon", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 1 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Velociraptor", dinoAttackPower = 2, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 2 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Triceratops", dinoAttackPower = 6, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 3 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Stegasaurus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 4 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Spinosaurus", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 5 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Brachiosaurus", dinoAttackPower = 4, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 6 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Pterodactyl", dinoAttackPower = 3, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 7 });
+            dinoList.Add(new Dinosaur { dinosaurName = "Plesiasoraus", dinoAttackPower = 5, dinoEnergy = 100, dinoShieldPower = 1, dinoHealth = 1, dinoID = 8 });
         }
         //add robots
         public void addRobots() 
@@ -459,7 +459,7 @@ namespace RobotsVsDinosaurs
         {
             while (runGame == true) 
             {
-                battlefieldClass.startABattle(difficulty, fleet.fleetOfRobots, herdClass.herdOFDinos, battlefieldEnvironmentPicked, gamemode);
+               runGame = battlefieldClass.startABattle(difficulty, fleet.fleetOfRobots, herdClass.herdOFDinos, battlefieldEnvironmentPicked, gamemode, runGame);
             }
            
         }
@@ -478,6 +478,7 @@ namespace RobotsVsDinosaurs
             gamemode = 0;
             difficulty = 0;
             battlefieldEnvironmentPicked = 0;
+            runGame = true;
         }
         public void warningPrompt() 
         {
