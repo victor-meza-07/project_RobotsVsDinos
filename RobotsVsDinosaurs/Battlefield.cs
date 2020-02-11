@@ -6,10 +6,16 @@ namespace RobotsVsDinosaurs
 {
     class Battlefield
     {
+        /// <summary>
+        /// BUGS: LINE 871 when using userdriven choices.
+        /// </summary>
+
         //Member Variables
         //Ideally, this is where i'll put items that will tilt the field on the side of the robots or the
         Random rng; // didn't feel like passing the one in fleet or herd.
         bool hasOneTeamDied;
+        bool dinosPersihed;
+        bool robotsPerished;
 
 
         double newDifficultyMargin;
@@ -18,17 +24,14 @@ namespace RobotsVsDinosaurs
             newDifficultyMargin = 0;
             rng = new Random();
             hasOneTeamDied = false;
+            dinosPersihed = false;
+            robotsPerished = false;
         }
 
         //METHODS
 
 
-        //START A BATTLE
-        /*
-         * We should be able to choose what abttlefield to be in, depending on the battlefield we are in, we will edit the efficacy levels of our dinos
-         * We should be able to know what difficulty we areplaying on in order to subtract from the efficacy levels of our dinos
-         * 
-         */
+    
         public void startABattle(int difficulty, List<Robot> fleet, List<Dinosaur> herd, int battlefieldEnvironmentPicked, int gamemode)
         {
             setDifficultyMargin(difficulty);
@@ -38,10 +41,12 @@ namespace RobotsVsDinosaurs
             while (hasOneTeamDied == false) 
             {
                 checkTeamsDeathStatus(fleet, herd);
+                if (hasOneTeamDied == true) { break; }
                 mainTurningLogic(gamemode, fleet, herd);
                 
             } // KEEP RUNNING WHILE NO TEAMS HAVE PERSIHED
-            statusofTeams(fleet, herd);
+            
+            displayWinnersMessage();
 
             
         }
@@ -60,6 +65,7 @@ namespace RobotsVsDinosaurs
 
         public void mainTurningLogic(int gamemode, List<Robot> fleet, List<Dinosaur> herd) 
         {
+            divider();
             int winner = 0;
             while (winner == 0) { winner = getturnFirst(winner); } //IF DINOS: 1, IF ROBOTS 2.
             
@@ -85,6 +91,7 @@ namespace RobotsVsDinosaurs
                 }//ROBOTS WON ROLL
 
                 statusofTeams(fleet, herd);
+                
 
                 if (attackflow == 1) 
                 {
@@ -138,7 +145,71 @@ namespace RobotsVsDinosaurs
             }//AUTO
             else if (gamemode == 2) 
             {
+                int attacker = 0;
+                int attacked = 0;
+                int attackflow = 0; // IF 1 R>D, 2 D>R
+                double damage = 0;
 
+
+
+
+                if (winner == 1)
+                {
+                    attackflow = 2;
+                }// DINOS WON ROLL
+                else if (winner == 2)
+                {
+                    attackflow = 1;
+                }//ROBOTS WON ROLL
+
+                statusofTeams(fleet, herd);
+                
+
+                if (attackflow == 1) // PLAYER WON ROLL
+                {
+                    string userchoice = "";
+                    //USER SHOULD CHOOSE WHO ATTACKS WHO
+                    Console.WriteLine("WHO WOULD YOU LIKE TO LAUNCH AN ATTACK?");
+                    attacker = displayRobotstoAttack(fleet); // WHICH ROBOT ATTACKS
+                    Console.WriteLine("WHO WOULD YOU LIKE TO RECEIVE THE ATTACK?");
+                    userchoice = displayDinostoAttack(herd); //WHAT DINO IS GONNA GET ATTACKED
+                    attacked = Convert.ToInt32(userchoice);
+
+                    
+
+                    Console.WriteLine($"{fleet[attacker].name} is attacking {herd[attacked].dinosaurName}");
+                }// PLAYER WON THE ROLL 
+                else if (attackflow == 2)//COMPUTER WON ROLL
+                {
+                    attacker = pickAttackingParty(herd.Count);
+                    attacked = pickAttackedParty(fleet.Count);
+                    while (herd[attacker].dinoHealth <= 0) // maybe put this in a foreach loop that checks for amialive = false; 
+                    {
+                        attacker = pickAttackingParty(fleet.Count);
+                    } // CHecks if Attacker is Alive IF NOT PICKS A NEW ATTACKER
+                      // THIS HAS TO DO WITH WHO WON THE ROLL OF DICE. FIND A WAY TO HAVE THE attackflow change at who won the woll of dice
+                    while (fleet[attacked].health <= 0) // is the thing getting attacked dead? if so get a new indice, if not continue
+                    {
+                        attacked = pickAttackedParty(fleet.Count);
+                    } // THIS ENSURES THE ATTACKED PARTY IS ALIVE.
+                    Console.WriteLine($"{herd[attacker].dinosaurName} is attacking {fleet[attacked].name}");
+                }// DINOS WON THE ROLL
+
+                damage = getDamageDealt(fleet, herd, attacker, attackflow); // GETS DAMAGE AND SETS ENERGY ACCRODINGLY
+                setHealthAfterAttack(fleet, herd, attacked, attackflow, damage); //SENDS DAMAGE AND SETS HEALTH AND SHIELDS ACCORDINGLY.
+                setDeathOfCharacter(fleet, herd);
+
+                if (attackflow == 1)//PLAYER WON ROLL
+                {
+                    Console.WriteLine($"{fleet[attacker].name} dealt {damage} damage points to {herd[attacked].dinosaurName}");
+                }
+                else if (attackflow == 2)//COMPUTER WON ROLL
+                {
+                    Console.WriteLine($"{herd[attacker].dinosaurName} dealt {damage} damage points to {fleet[attacked].name}");
+                }
+
+                Console.WriteLine(" ");
+                Console.WriteLine(" ");
             }//SINGLE PLAYER
             else if (gamemode == 3) 
             {
@@ -760,6 +831,12 @@ namespace RobotsVsDinosaurs
             {
                 Console.WriteLine(string.Format("{0,-10} {1,-20} {2, -20} {3, -20}", dino.dinosaurName, dino.dinoHealth.ToString(), dino.dinoShieldPower.ToString(), dino.dinoEnergy.ToString()));
             }
+            Console.WriteLine(" ");
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write('-');
+            }
+            Console.WriteLine(" ");
             foreach (Robot robo in fleet) 
             {
                 Console.WriteLine(string.Format("{0,-10} {1,-20} {2, -20} {3, -20}", robo.name, robo.health.ToString(), "0", robo.energy.ToString()));
@@ -772,15 +849,108 @@ namespace RobotsVsDinosaurs
             foreach (Dinosaur dino in herd) 
             {
                 if (dino.amIalive == true) { answer = false; }
-                else { answer = true; }
+                else { answer = true; dinosPersihed = true; }
             } // checks for at least one instance of an alive character if none are found the team has perished. 
             foreach (Robot robo in fleet)
             {
                 if (robo.amIalive == true) { answer = false; }
-                else { answer = true; }
+                else { answer = true; robotsPerished = true; }
             }
 
             return answer;
+        } // check the death of our dinos and robots
+        public string displayDinostoAttack(List<Dinosaur> herd) 
+        {
+            string userchoice = "";
+
+            Console.WriteLine(string.Format("{0, -20} | {1, -20} | {2, -20} | {3, -20} | {4, -20}", 
+                "ID", "Name", "Health", "Shield Power", "Attack Efficacy"));
+
+            for (int i = 0; i < herd.Count; i++)
+            {
+                if (herd[i].amIalive == true)
+                {
+                    Console.WriteLine(string.Format("{0, -20}  {1, -20}  {2, -20}  {3, -20}  {4, -20}",
+                        i, herd[i].dinosaurName, herd[i].dinoHealth, herd[i].dinoShieldPower, herd[i].dinoAttackEfficacy));
+                }
+            }
+
+            userchoice = Console.ReadLine();
+            int id = 0;
+            id = Convert.ToInt32(userchoice);
+
+            //scan if user choice was valid
+            
+            
+          if ((herd[id].amIalive == false))
+          {
+             while ((herd[id].amIalive == false))
+             {
+                Console.WriteLine("INCORRECT USER CHOICE! CHOOSE A DINO THATS ALIVE");
+                userchoice = Console.ReadLine();
+                    id = Convert.ToInt32(userchoice);
+             }
+          }
+            
+
+            return userchoice;
+        } // RETURNS ID AS STRING
+        public int displayRobotstoAttack(List<Robot> fleet) 
+        {
+            int roboid = 0;
+            string userchoice = "";
+
+            Console.WriteLine(string.Format("{0, -10} | {1, -20} | {2, -20} | {3, -20} | {4, -20} | {5, -20}",
+                "ID", "Name", "Health", "WEAPON", "Attack POWER", "Atack Efficacy"));
+
+            for (int i = 0; i < fleet.Count; i++)
+            {
+                if (fleet[i].amIalive == true)
+                {
+                    Console.WriteLine(string.Format("{0, -10}  {1, -20}  {2, -20}  {3, -20}  {4, -20}  {5, -20}",
+                i, fleet[i].name, fleet[i].health, fleet[i].Weapontype.weaponType, fleet[i].attackPower, fleet[i].Weapontype.strikeefficacy));
+                }
+            }//DSIPLAY THE FLEET THAT IS ALIVE
+            userchoice = Console.ReadLine();
+
+
+            while ((fleet[Convert.ToInt32(userchoice)].amIalive == false)) 
+            {
+                Console.WriteLine("CHOOSE A ROBOT THAT HASNT PERSIHED");
+                userchoice = Console.ReadLine();
+            }
+
+            roboid = Convert.ToInt32(userchoice);
+            
+
+            return roboid;
+        } // RETURNS ID AS INT
+        public void displayWinnersMessage() 
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(" ");
+            }
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write('=');
+            }
+            Console.WriteLine("THE GAME HAS CONCLUDED!");
+            if (robotsPerished == true) 
+            {
+                Console.WriteLine("THE DINOS WERE EXTERMINATED");
+            }
+            else if (dinosPersihed == true) 
+            {
+                Console.WriteLine("THE ROBOTS WERE SLAIN");
+            }
+        } //display winners
+        public void divider() 
+        {
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write('=');
+            }
         }
     }
 }

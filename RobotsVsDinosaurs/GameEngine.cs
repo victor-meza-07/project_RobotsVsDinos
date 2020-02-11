@@ -8,17 +8,10 @@ namespace RobotsVsDinosaurs
     /// <summary> 
     /// TODO: 
     ///  
-    /// START A BATTLE IN THE BATTLEFIELD CLASS WHERE:
-    /// DIFFICULTY, HERD LIST, FLEET LIST, AND ENVIRONMENT are passed through
-    ///     we need to scan our herd list once we know the environment we are in for ID's that match criteria depending on environemnt.
-    ///     for example send to a method that checks what dinos are in our herd, compares their ids to see if they are getting bennefits from the environment we are playing in
-    ///     we need to make a library of dino ids that get a buffer in a certain environment, preferably in the dino class, where if in this 
-    ///     type of environment attack efficacy goes up or down
-    ///     
-    ///     add game logic where:  attack damage = (attack power * attack efficacy * weapon Strike Power)
+    /// 
     ///     
     ///****************BUGS****************
-    /// ALL PLAY A ROLL IN GAMEPLAY
+    /// CLEANUP USERINPUT
     /// </summary>
 
     //WE WANT THE "FLEET" OF ROBOTS THAT THE USER SELECTED TO BE SAVED IN FLEET
@@ -103,7 +96,11 @@ namespace RobotsVsDinosaurs
 
             Console.Clear();
 
+            warningPrompt();
+
             Console.WriteLine($"BATTLE IN: {getPickedEnvironment()}");
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
             
             startABattle();
             
@@ -427,6 +424,7 @@ namespace RobotsVsDinosaurs
             string userchoice = "";
             Console.WriteLine($"Pick a weapon for {robotasOBJ.name}");
             displayAllWeapons(robotasOBJ.name);
+            userchoice = Console.ReadLine();
             return userchoice;
         }
 
@@ -480,6 +478,18 @@ namespace RobotsVsDinosaurs
             gamemode = 0;
             difficulty = 0;
             battlefieldEnvironmentPicked = 0;
+        }
+        public void warningPrompt() 
+        {
+            
+            for (int i = 3; i > 0; i--)
+            {
+                Console.Clear();
+                Console.WriteLine("GAME WILL START IN");
+                Console.WriteLine(i);
+                System.Threading.Thread.Sleep(1000);
+                Console.Clear();
+            }
         }
     }
 }
